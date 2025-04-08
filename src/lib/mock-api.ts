@@ -6,20 +6,13 @@ export function makeServer() {
             transaction: Model,
         },
 
-        seeds(server) {
-            server.create('transaction', {
-                id: 'tr_example123',
-                status: 'authorized',
-                amount: 1000,})
-        },
-
         routes() {
             this.namespace = 'api'
 
             this.post('/checkout', (schema, request) => {
                 const attrs = JSON.parse(request.requestBody)
 
-                if (!attrs?.paymentInfo?.cardNumber) {
+                if (!attrs?.paymentMethod?.card.number) {
                     return new Response(400, {}, { error: 'Invalid card number' })
                 }
 
