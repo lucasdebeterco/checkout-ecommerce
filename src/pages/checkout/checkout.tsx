@@ -1,15 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { CreditCard, ShoppingCart, User } from 'lucide-react'
+import { CreditCard, User } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 import { postTransaction } from '@/api/post-transaction.ts'
 import { queryClient } from '@/lib/query-client.ts'
-import { cartMock } from '@/pages/checkout/mocks/cart-mock.ts'
+import { OrderSummary } from '@/pages/checkout/order-summary.tsx'
 import { checkoutFormSchema } from '@/pages/checkout/schemas/checkout-form-schema.ts'
 import { formatCardNumber } from '@/utils/format-card-number.ts'
-import { formatCurrency } from '@/utils/format-currency.ts'
 import { formatExpirationDate } from '@/utils/format-expiration-date.ts'
 
 export function Checkout() {
@@ -27,14 +26,6 @@ export function Checkout() {
         resolver: zodResolver(checkoutFormSchema)
     })
 
-    const total = cartMock.reduce((sum, item) => sum + item.amount * item.quantity, 0)
-    setValue('amount', total)
-    setValue('items', cartMock.map((item) => ({
-        name: item.name,
-        quantity: item.quantity,
-        amount: item.amount,
-    })))
-
     return (
         <div className="bg-gray-50">
             <div className="mx-auto max-w-7xl px-4 py-8">
@@ -46,8 +37,8 @@ export function Checkout() {
 
                             <div className="rounded-lg bg-white p-6 shadow">
                                 <div className="mb-4 flex items-center gap-2">
-                                    <User className="size-5"/>
-                                    <h2 className="text-xl font-semibold">Customer Information</h2>
+                                    <User className="size-5 text-base-pink"/>
+                                    <h2 className="text-md font-semibold">Customer Information</h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -82,7 +73,7 @@ export function Checkout() {
                                             {...register('customer.document.type')}
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         />
-                                        {errors.customer?.document.type && (
+                                        {errors.customer?.document?.type && (
                                             <p className="mt-1 text-sm text-red-600">{errors.customer.document.type.message}</p>
                                         )}
                                         {/* TODO - Fazer um radio button */}
@@ -96,7 +87,7 @@ export function Checkout() {
                                             {...register('customer.document.number')}
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         />
-                                        {errors.customer?.document.number && (
+                                        {errors.customer?.document?.number && (
                                             <p className="mt-1 text-sm text-red-600">{errors.customer.document.number.message}</p>
                                         )}
                                     </div>
@@ -106,8 +97,8 @@ export function Checkout() {
 
                             <div className="rounded-lg bg-white p-6 shadow">
                                 <div className="mb-4 flex items-center gap-2">
-                                    <User className="size-5" />
-                                    <h2 className="text-xl font-semibold">Address Information</h2>
+                                    <User className="size-5 text-base-pink" />
+                                    <h2 className="text-md font-semibold">Address Information</h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -187,8 +178,8 @@ export function Checkout() {
 
                             <div className="rounded-lg bg-white p-6 shadow">
                                 <div className="mb-4 flex items-center gap-2">
-                                    <CreditCard className="size-5"/>
-                                    <h2 className="text-xl font-semibold">Payment Information</h2>
+                                    <CreditCard className="size-5 text-base-pink" />
+                                    <h2 className="text-lg font-semibold">Payment Information</h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -204,7 +195,7 @@ export function Checkout() {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                             maxLength={19}
                                         />
-                                        {errors.paymentMethod?.card.number && (
+                                        {errors.paymentMethod?.card?.number && (
                                             <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.number.message}</p>
                                         )}
                                     </div>
@@ -217,7 +208,7 @@ export function Checkout() {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                             maxLength={19}
                                         />
-                                        {errors.paymentMethod?.card.holderName && (
+                                        {errors.paymentMethod?.card?.holderName && (
                                             <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.holderName.message}</p>
                                         )}
                                     </div>
@@ -230,7 +221,7 @@ export function Checkout() {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                             maxLength={19}
                                         />
-                                        {errors.paymentMethod?.card.cvv && (
+                                        {errors.paymentMethod?.card?.cvv && (
                                             <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.cvv.message}</p>
                                         )}
                                     </div>
@@ -247,7 +238,7 @@ export function Checkout() {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                             maxLength={19}
                                         />
-                                        {errors.paymentMethod?.card.expirationDate && (
+                                        {errors.paymentMethod?.card?.expirationDate && (
                                             <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.expirationDate.message}</p>
                                         )}
                                     </div>
@@ -260,7 +251,7 @@ export function Checkout() {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                             maxLength={19}
                                         />
-                                        {errors.paymentMethod?.card.installments && (
+                                        {errors.paymentMethod?.card?.installments && (
                                             <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.installments.message}</p>
                                         )}
                                     </div>
@@ -270,43 +261,14 @@ export function Checkout() {
                             <button
                                 type="submit"
                                 disabled={isPending}
-                                className="w-full rounded-md bg-indigo-600 px-4 py-3 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+                                className="w-full rounded-md bg-base-green px-4 py-3 text-white hover:bg-base-green/90 focus:outline-none focus:ring-2 focus:ring-base-green focus:ring-offset-2 disabled:opacity-50"
                             >
                                 {isPending ? 'Processing...' : 'Complete Purchase'}
                             </button>
                         </form>
                     </div>
 
-                    <div className="lg:col-span-1">
-                        <div className="sticky top-4 rounded-lg bg-white p-6 shadow">
-                            <div className="mb-4 flex items-center gap-2">
-                                <ShoppingCart className="size-5" />
-                                <h2 className="text-xl font-semibold">Order Summary</h2>
-                            </div>
-
-                            <div className="space-y-4">
-                                {cartMock.map((item) => (<div key={item.id} className="flex gap-4">
-                                    <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        className="size-20 rounded object-cover"
-                                    />
-                                    <div>
-                                        <h3 className="font-medium">{item.name}</h3>
-                                        <p className="text-gray-500">Quantity: {item.quantity}</p>
-                                        <p className="font-medium">{formatCurrency(item.amount)}</p>
-                                    </div>
-                                </div>))}
-
-                                <div className="border-t pt-4">
-                                    <div className="flex justify-between font-medium">
-                                        <span>Total</span>
-                                        <span>{formatCurrency(total)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <OrderSummary setValue={setValue} />
                 </div>
             </div>
         </div>)

@@ -52,7 +52,7 @@ export const columns: ColumnDef<Payment>[] = [
     },
     {
         accessorKey: 'paymentMethod',
-        header: () => <div className="text-right">Payment Method</div>,
+        header: () => <div>Payment Method</div>,
         cell: ({ row }) => (
             <div className="capitalize">{row.getValue('paymentMethod')}</div>
         ),
