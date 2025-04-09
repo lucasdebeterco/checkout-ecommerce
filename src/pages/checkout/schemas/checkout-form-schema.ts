@@ -18,11 +18,11 @@ export const checkoutFormSchema = z.object({
             neighborhood: z.string().min(1, 'Neighborhood is required'),
         })
     }),
-    // items: z.array(z.object({
-    //     name: z.string().min(1, 'Item name is required'),
-    //     quantity: z.string().min(1, 'Item quantity is required'),
-    //     amount: z.string().min(1, 'Item amount is required'),
-    // })),
+    items: z.array(z.object({
+        name: z.string().min(1, 'Item name is required'),
+        quantity: z.number().min(1, 'Item quantity is required'),
+        amount: z.number().min(0.01, 'Item amount is required'),
+    })),
     paymentMethod: z.object({
         type: z.string().default('card'),
         card: z.object({

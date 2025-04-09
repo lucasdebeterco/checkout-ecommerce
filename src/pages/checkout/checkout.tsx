@@ -27,9 +27,13 @@ export function Checkout() {
         resolver: zodResolver(checkoutFormSchema)
     })
 
-    const total = cartMock.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const total = cartMock.reduce((sum, item) => sum + item.amount * item.quantity, 0)
     setValue('amount', total)
-    // TODO - Fazer setValue do array de itens
+    setValue('items', cartMock.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        amount: item.amount,
+    })))
 
     return (
         <div className="bg-gray-50">
@@ -81,6 +85,7 @@ export function Checkout() {
                                         {errors.customer?.document.type && (
                                             <p className="mt-1 text-sm text-red-600">{errors.customer.document.type.message}</p>
                                         )}
+                                        {/* TODO - Fazer um radio button */}
                                     </div>
 
                                     <div>
@@ -289,7 +294,7 @@ export function Checkout() {
                                     <div>
                                         <h3 className="font-medium">{item.name}</h3>
                                         <p className="text-gray-500">Quantity: {item.quantity}</p>
-                                        <p className="font-medium">{formatCurrency(item.price)}</p>
+                                        <p className="font-medium">{formatCurrency(item.amount)}</p>
                                     </div>
                                 </div>))}
 
