@@ -31,6 +31,9 @@ export const checkoutFormSchema = z.object({
             cvv: z.string().min(3, 'Invalid CVV'),
             expirationDate: z.string().min(7, 'Invalid date'),
             installments: z.number()
-        })
+        }),
+        processedByMalga: z.boolean().optional()
     })
 })
+
+export type CheckoutFormData = z.infer<typeof checkoutFormSchema>

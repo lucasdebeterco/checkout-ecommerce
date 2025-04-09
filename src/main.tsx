@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
 
 import App from './App.tsx'
 import { makeServer } from './lib/mock-api.ts'
@@ -15,5 +16,6 @@ createRoot(document.getElementById('root')!).render(
                 <App />
             </BrowserRouter>
         </QueryClientProvider>
-    </StrictMode>,
+        <ToastContainer />
+    </StrictMode> as React.ReactElement
 )

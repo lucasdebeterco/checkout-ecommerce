@@ -1,17 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import {
-    ColumnDef,
-    ColumnFiltersState,
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    SortingState,
-    useReactTable
-} from '@tanstack/react-table'
 import { MoreHorizontal } from 'lucide-react'
-import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { Button } from '@/components/ui/button'
@@ -23,15 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { TransactionStatus } from '@/enums/transaction-status.ts'
 
 import { getTransactions } from '../api/get-transactions.ts'
 
@@ -41,145 +21,106 @@ export type Payment = {
     status: 'pending' | 'processing' | 'success' | 'failed'
 }
 
-export const columns: ColumnDef<Payment>[] = [
-    {
-        accessorKey: 'id',
-        header: 'Transaction ID',
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue('id')}</div>
-        ),
-    },
-    {
-        accessorKey: 'paymentMethod',
-        header: () => <div>Payment Method</div>,
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue('paymentMethod')}</div>
-        ),
-    },
-    {
-        accessorKey: 'status',
-        header: 'Status',
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue('status')}</div>
-        ),
-    },
-    {
-        id: 'actions',
-        enableHiding: false,
-        cell: ({ row }) => {
-            const navigate = useNavigate()
-            const payment = row.original
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="size-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.id)}
-                        >
-                            Copy payment ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => navigate(`/transactions/${payment.id}`)}>View payment details</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
-    }
-]
-
 export function TransactionList() {
+    const navigate = useNavigate()
 
-    const { data: apiData } = useQuery({
+    const { data: apiData, isLoading } = useQuery({
         queryKey: ['transactions'],
         queryFn: () => getTransactions()
     })
 
     // TODO - Tipar transaction
-    const data: Payment[] = apiData && apiData.transactions ? apiData.transactions.map(((transaction: any) => ({
+    const data: Payment[] = apiData && apiData.transactions && apiData.transactions.map(((transaction: any) => ({
         id: transaction.id,
         status: transaction.status,
         paymentMethod: transaction.paymentMethod.type
-    }))) : []
+    })))
 
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
-    const table = useReactTable({
-        data,
-        columns,
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        state: {
-            sorting, columnFilters,
-        }
-    })
+    if (isLoading) {
+        return (
+            <div className="flex min-h-[400px] items-center justify-center">
+                <div className="size-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-col">
-            {data.length ? (
-                <div className="w-full">
-                    <div className="flex items-center py-4">
-                        <Input
-                            placeholder="Filter id..."
-                            value={(table.getColumn('id')?.getFilterValue() as string) ?? ''}
-                            onChange={(event) => table.getColumn('id')?.setFilterValue(event.target.value)}
-                            className="max-w-sm"
-                        />
-                    </div>
-                    <div className="rounded-md border">
-                        <Table>
-                            <TableHeader>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id}>
-                                        {headerGroup.headers.map((header) => {
-                                            return (
-                                                <TableHead key={header.id}>
-                                                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                                </TableHead>
-                                            )
-                                        })}
-                                    </TableRow>
-                                ))}
-                            </TableHeader>
-                            <TableBody>
-                                {table.getRowModel().rows?.length ? (table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))) : (
-                                    <TableRow>
-                                        <TableCell
-                                            colSpan={columns.length}
-                                            className="h-24 text-center"
-                                        >
-                                            No results.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
+            <div className="w-full">
+                <div className="rounded-lg bg-white p-6 shadow">
+                    <h2 className="mb-4 text-xl font-semibold text-gray-800">Transactions List</h2>
+                    {data.length ? (
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-600">
+                                            Transaction ID
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-600">
+                                            Payment Method
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-600">
+                                            Status
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-600"></th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 bg-white">
+                                    {/* TODO - Passar no projeto removendo todos os ANY */}
+                                    {data.map((item: any) => (<tr key={item.id}>
+                                        <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                                            {item.id}
+                                        </td>
+                                        <td className="whitespace-nowrap px-6 py-4 text-sm capitalize text-gray-600">
+                                            {item.paymentMethod}
+                                        </td>
+                                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
+                                            <span
+                                                className={`rounded-full px-3 py-1 text-sm font-semibold ${item.status === TransactionStatus.AUTHORIZED ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                                {item.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="size-8 p-0">
+                                                        <span className="sr-only">Open menu</span>
+                                                        <MoreHorizontal className="text-gray-700"/>
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    <DropdownMenuItem
+                                                        onClick={() => navigator.clipboard.writeText(item.id)}>
+                                                        Copy payment ID
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator/>
+                                                    <DropdownMenuItem onClick={() => {
+                                                        navigate(`/transactions/${item.id}`)
+                                                    }}>
+                                                        View payment details
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </td>
+                                    </tr>))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col text-center ">
+                            <span className="font-semibold text-base-green">
+                                Any transaction avaliable
+                            </span>
+                            <span className="text-sm text-gray-800">
+                                Please, return to checkout page and create a new transaction
+                            </span>
+                        </div>
+                    )}
                 </div>
-            ) : (
-                <div>Sem dados</div>
-            )}
+            </div>
         </div>
     )
 }
