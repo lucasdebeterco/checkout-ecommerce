@@ -22,6 +22,8 @@ export function makeServer() {
                     ...attrs,
                 }
 
+                console.log('transaction data: ', transactionData)
+
                 const created = schema.create('transaction', transactionData)
 
                 return {

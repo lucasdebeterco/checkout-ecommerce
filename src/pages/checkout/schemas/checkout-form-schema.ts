@@ -26,11 +26,11 @@ export const checkoutFormSchema = z.object({
     paymentMethod: z.object({
         type: z.string().default('card'),
         card: z.object({
-            number: z.string().min(16, 'Invalid card number'),
-            //holderName: z.string().min(1, 'Cardholder name is required'),
-            // cvv: z.string().min(3, 'Invalid CVV'),
-            // expirationDate: z.string().min(5, 'Invalid date'),
-            // installments: z.number().min(1).max(12)
+            number: z.string().min(19, 'Invalid card number'),
+            holderName: z.string().min(1, 'Cardholder name is required'),
+            cvv: z.string().min(3, 'Invalid CVV'),
+            expirationDate: z.string().min(7, 'Invalid date'),
+            installments: z.number()
         })
     })
 })
