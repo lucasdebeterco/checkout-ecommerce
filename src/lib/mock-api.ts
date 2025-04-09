@@ -35,16 +35,17 @@ export function makeServer() {
                 return schema.all('transaction')
             })
 
-            // this.get('/transactions/:id', (schema, request) => {
-            //     const id = request.params.id
-            //     const transaction = schema.find('transaction', id)
-            //
-            //     if (!transaction) {
-            //         return new Response(404, {}, { error: 'Transaction not found' })
-            //     }
-            //
-            //     return transaction.attrs
-            // })
+            this.get('/transactions/:id', (schema, request) => {
+                const id = request.params.id
+                console.log(id)
+                const transaction = schema.find('transaction', id)
+
+                if (!transaction) {
+                    return new Response(404, {}, { error: 'Transaction not found' })
+                }
+
+                return transaction.attrs
+            })
         },
     })
 }

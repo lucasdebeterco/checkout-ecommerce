@@ -8,10 +8,9 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     SortingState,
-    useReactTable,
-    VisibilityState,
+    useReactTable
 } from '@tanstack/react-table'
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -102,7 +101,8 @@ export function TransactionList() {
         queryFn: () => getTransactions()
     })
 
-    const data: Payment[] = apiData && apiData.transactions ? apiData.transactions.map(transaction => ({
+    // TODO - Tipar transaction
+    const data: Payment[] = apiData && apiData.transactions ? apiData.transactions.map((transaction: any => ({
         id: transaction.id,
         status: transaction.status,
         paymentMethod: transaction.paymentMethod.type
