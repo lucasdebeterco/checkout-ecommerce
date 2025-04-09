@@ -102,11 +102,11 @@ export function TransactionList() {
     })
 
     // TODO - Tipar transaction
-    const data: Payment[] = apiData && apiData.transactions ? apiData.transactions.map((transaction: any => ({
+    const data: Payment[] = apiData && apiData.transactions ? apiData.transactions.map(((transaction: any) => ({
         id: transaction.id,
         status: transaction.status,
         paymentMethod: transaction.paymentMethod.type
-    })) : []
+    }))) : []
 
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
