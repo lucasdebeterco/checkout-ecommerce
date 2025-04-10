@@ -2,6 +2,11 @@ import { endOfMonth, isAfter,parse } from 'date-fns'
 import { createServer, Model, Response } from 'miragejs'
 
 import { TransactionStatus } from '@/enums/transaction-status.ts'
+import {
+    getTransactionByIdFromStorage,
+    getTransactionsFromStorage,
+    saveTransactionToStorage
+} from '@/lib/local-storage.ts'
 
 export function makeServer() {
     return createServer({
@@ -12,7 +17,7 @@ export function makeServer() {
         routes() {
             this.namespace = 'api'
 
-            this.post('/checkout', (schema, request) => {
+            this.post('/checkout', (_, request) => {
                 const attrs = JSON.parse(request.requestBody)
                 const card = attrs?.paymentMethod?.card
 
@@ -26,7 +31,7 @@ export function makeServer() {
                         const lastDayOfMonth = endOfMonth(parsedDate)
 
                         if (!isAfter(lastDayOfMonth, new Date())) {
-                            return new Response(400, {}, { error: 'Card is expired' })
+                            return new Response(400, {}, { error: 'Invalid expiration date' })
                         }
                     } catch (error) {
                         return new Response(400, {}, { error: 'Invalid expiration date format' })
@@ -42,35 +47,36 @@ export function makeServer() {
                     paymentMethod: {
                         type: attrs.paymentMethod.type,
                         card: {
-                            firstDigits: attrs.paymentMethod.card.number.slice(0, 4),
-                            lastDigits: attrs.paymentMethod.card.number.slice(-4),
-                            holderName: attrs.paymentMethod.card.holderName,
-                            expirationDate: attrs.paymentMethod.card.expirationDate,
-                            installments: attrs.paymentMethod.card.installments
+                            firstDigits: card.number.slice(0, 4),
+                            lastDigits: card.number.slice(-4),
+                            holderName: card.holderName,
+                            expirationDate: card.expirationDate,
+                            installments: card.installments
                         }
                     }
                 }
 
-                const created = schema.create('transaction', transactionData)
+                saveTransactionToStorage(transactionData)
 
                 return {
-                    transaction: created.attrs,
+                    transaction: transactionData,
                 }
             })
 
-            this.get('/transactions', (schema) => {
-                return schema.all('transaction')
+            this.get('/transactions', () => {
+                const transactions = getTransactionsFromStorage()
+                return { transactions }
             })
 
-            this.get('/transactions/:id', (schema, request) => {
+            this.get('/transactions/:id', (_, request) => {
                 const id = request.params.id
-                const transaction = schema.find('transaction', id)
+                const transaction = getTransactionByIdFromStorage(id)
 
                 if (!transaction) {
                     return new Response(404, {}, { error: 'Transaction not found' })
                 }
 
-                return transaction.attrs
+                return transaction
             })
         },
     })

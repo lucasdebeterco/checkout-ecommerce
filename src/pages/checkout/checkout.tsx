@@ -245,7 +245,11 @@ export function Checkout() {
                                         <label className="block text-sm font-medium text-gray-700">CVV</label>
                                         <input
                                             type="text"
-                                            {...register('paymentMethod.card.cvv')}
+                                            {...register('paymentMethod.card.cvv', {
+                                                onChange: (e) => {
+                                                    setValue('paymentMethod.card.cvv', e.target.value.slice(0, 3))
+                                                }
+                                            })}
                                             className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
                                             maxLength={19}
                                         />
