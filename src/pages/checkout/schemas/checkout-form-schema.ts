@@ -29,8 +29,8 @@ export const checkoutFormSchema = z.object({
             number: z.string().min(19, 'Invalid card number'),
             holderName: z.string().min(1, 'Cardholder name is required'),
             cvv: z.string().min(3, 'Invalid CVV'),
-            expirationDate: z.string().min(7, 'Invalid date'),
-            installments: z.number()
+            expirationDate: z.string().min(7, 'Invalid date, expected MM/YYYY'),
+            installments: z.number().default(1)
         }),
         processedByMalga: z.boolean().optional()
     })

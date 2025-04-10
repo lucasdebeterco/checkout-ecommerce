@@ -11,6 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Loader } from '@/components/ui/loader.tsx'
 import { TransactionStatus } from '@/enums/transaction-status.ts'
 
 import { getTransactions } from '../api/get-transactions.ts'
@@ -30,20 +31,13 @@ export function TransactionList() {
     })
 
     // TODO - Tipar transaction
-    const data: Payment[] = apiData && apiData.transactions && apiData.transactions.map(((transaction: any) => ({
+    const data: Payment[] = apiData?.transactions?.map(((transaction: any) => ({
         id: transaction.id,
         status: transaction.status,
         paymentMethod: transaction.paymentMethod.type
     })))
 
-
-    if (isLoading) {
-        return (
-            <div className="flex min-h-[400px] items-center justify-center">
-                <div className="size-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            </div>
-        )
-    }
+    if (isLoading) return <Loader />
 
     return (
         <div className="flex flex-col">

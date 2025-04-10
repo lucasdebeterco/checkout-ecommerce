@@ -3,6 +3,7 @@ import { ClipboardList, CreditCard, MapPin, User } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 
 import { getTransactionById } from '@/api/get-transaction-by-id.ts'
+import { Loader } from '@/components/ui/loader.tsx'
 import { TransactionStatus } from '@/enums/transaction-status.ts'
 import { formatCurrency } from '@/utils/format-currency.ts'
 
@@ -14,13 +15,7 @@ export function TransactionDetails() {
         queryFn: () => getTransactionById(id ?? ''),
     })
 
-    if (isLoading) {
-        return (
-            <div className="flex min-h-[400px] items-center justify-center">
-                <div className="size-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            </div>
-        )
-    }
+    if (isLoading) return <Loader />
 
     return (
         <div className="mx-auto max-w-4xl">

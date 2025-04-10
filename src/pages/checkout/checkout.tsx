@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 import { postTransaction } from '@/api/post-transaction.ts'
+import { Input } from '@/components/ui/input.tsx'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
 import { queryClient } from '@/lib/query-client.ts'
 import { OrderSummary } from '@/pages/checkout/order-summary.tsx'
 import { CheckoutFormData, checkoutFormSchema } from '@/pages/checkout/schemas/checkout-form-schema.ts'
@@ -30,7 +32,10 @@ export function Checkout() {
 
     const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
         resolver: zodResolver(checkoutFormSchema),
-        defaultValues: { customer: { document: {type: 'cpf'}} }
+        defaultValues: {
+            customer: { document: {type: 'cpf'} },
+            paymentMethod: { card: { installments: 1 } }
+        }
     })
 
     function onSubmitForm(data: CheckoutFormData) {
@@ -48,34 +53,22 @@ export function Checkout() {
                             <div className="rounded-lg bg-white p-6 shadow">
                                 <div className="mb-6 flex items-center gap-2">
                                     <User className="size-5 text-base-green"/>
-                                    <h2 className="text-md font-semibold text-gray-800">Customer Information</h2>
+                                    <h2 className="font-semibold text-gray-800">Customer Information</h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Name</label>
-                                        <input
-                                            type="text"
-                                            {...register('customer.firstName')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                        />
-                                        {errors.customer?.firstName && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.customer.firstName.message}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                                        <input
-                                            type="text"
-                                            {...register('customer.lastName')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                        />
-                                        {errors.customer?.lastName && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.customer.lastName.message}</p>
-                                        )}
-                                    </div>
-
+                                    <Input
+                                        label="Name"
+                                        error={errors.customer?.firstName}
+                                        {...register('customer.firstName')}
+                                        name="customer.firstName"
+                                    />
+                                    <Input
+                                        label="Last Name"
+                                        error={errors.customer?.lastName}
+                                        {...register('customer.lastName')}
+                                        name="customer.lastName"
+                                    />
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Document</label>
                                         <Controller
@@ -108,19 +101,12 @@ export function Checkout() {
                                             )}
                                         />
                                     </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Document
-                                            number</label>
-                                        <input
-                                            type="text"
-                                            {...register('customer.document.number')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                        />
-                                        {errors.customer?.document?.number && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.customer.document.number.message}</p>
-                                        )}
-                                    </div>
+                                    <Input
+                                        label="Document number"
+                                        error={errors.customer?.document?.number}
+                                        {...register('customer.document.number')}
+                                        name="customer.document.number"
+                                    />
                                 </div>
                             </div>
 
@@ -132,77 +118,42 @@ export function Checkout() {
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">City</label>
-                                        <input
-                                            type="text"
-                                            {...register('customer.address.city')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                        />
-                                        {errors.customer?.address?.city && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.customer.address.city.message}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Street</label>
-                                        <input
-                                            type="text"
-                                            {...register('customer.address.street')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                        />
-                                        {errors.customer?.address?.street && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.customer.address.street.message}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Number</label>
-                                        <input
-                                            type="text"
-                                            {...register('customer.address.number')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                        />
-                                        {errors.customer?.address?.number && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.customer.address.number.message}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Country</label>
-                                        <input
-                                            type="text"
-                                            {...register('customer.address.country')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                        />
-                                        {errors.customer?.address?.country && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.customer.address.country.message}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">State</label>
-                                        <input
-                                            type="text"
-                                            {...register('customer.address.state')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                        />
-                                        {errors.customer?.address?.state && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.customer.address.state.message}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Neighborhood</label>
-                                        <input
-                                            type="text"
-                                            {...register('customer.address.neighborhood')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                        />
-                                        {errors.customer?.address?.neighborhood && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.customer.address.neighborhood.message}</p>
-                                        )}
-                                    </div>
+                                    <Input
+                                        label="City"
+                                        error={errors.customer?.address?.city}
+                                        {...register('customer.address.city')}
+                                        name="customer.address.city"
+                                    />
+                                    <Input
+                                        label="Street"
+                                        error={errors.customer?.address?.street}
+                                        {...register('customer.address.street')}
+                                        name="customer.address.street"
+                                    />
+                                    <Input
+                                        label="Number"
+                                        error={errors.customer?.address?.number}
+                                        {...register('customer.address.number')}
+                                        name="customer.address.number"
+                                    />
+                                    <Input
+                                        label="Country"
+                                        error={errors.customer?.address?.country}
+                                        {...register('customer.address.country')}
+                                        name="customer.address.country"
+                                    />
+                                    <Input
+                                        label="State"
+                                        error={errors.customer?.address?.state}
+                                        {...register('customer.address.state')}
+                                        name="customer.address.state"
+                                    />
+                                    <Input
+                                        label="Neighborhood"
+                                        error={errors.customer?.address?.neighborhood}
+                                        {...register('customer.address.neighborhood')}
+                                        name="customer.address.neighborhood"
+                                    />
                                 </div>
                             </div>
 
@@ -213,77 +164,70 @@ export function Checkout() {
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Card Number</label>
-                                        <input
-                                            type="text"
-                                            {...register('paymentMethod.card.number', {
-                                                onChange: (e) => {
-                                                    setValue('paymentMethod.card.number', formatCardNumber(e.target.value))
-                                                }
-                                            })}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                            maxLength={19}
-                                        />
-                                        {errors.paymentMethod?.card?.number && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.number.message}</p>)}
-                                    </div>
+                                    <Input
+                                        label="Card Number"
+                                        error={errors.paymentMethod?.card?.number}
+                                        {...register('paymentMethod.card.number', {
+                                            onChange: (e) => {
+                                                setValue('paymentMethod.card.number', formatCardNumber(e.target.value))
+                                            }
+                                        })}
+                                        maxLength={19}
+                                        name="paymentMethod.card.number"
+                                    />
+                                    <Input
+                                        label="Card Holder"
+                                        error={errors.paymentMethod?.card?.holderName}
+                                        {...register('paymentMethod.card.holderName')}
+                                        name="paymentMethod.card.holderName"
+                                    />
+                                    <Input
+                                        label="CVV"
+                                        error={errors.paymentMethod?.card?.cvv}
+                                        {...register('paymentMethod.card.cvv', {
+                                            onChange: (e) => {
+                                                setValue('paymentMethod.card.cvv', e.target.value.slice(0, 3))
+                                            }
+                                        })}
+                                        name="paymentMethod.card.cvv"
+                                    />
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Card Holder</label>
-                                        <input
-                                            type="text"
-                                            {...register('paymentMethod.card.holderName')}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                            maxLength={19}
-                                        />
-                                        {errors.paymentMethod?.card?.holderName && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.holderName.message}</p>)}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">CVV</label>
-                                        <input
-                                            type="text"
-                                            {...register('paymentMethod.card.cvv', {
-                                                onChange: (e) => {
-                                                    setValue('paymentMethod.card.cvv', e.target.value.slice(0, 3))
-                                                }
-                                            })}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                            maxLength={19}
-                                        />
-                                        {errors.paymentMethod?.card?.cvv && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.cvv.message}</p>)}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Expiration
-                                            Date</label>
-                                        <input
-                                            type="text"
-                                            {...register('paymentMethod.card.expirationDate', {
-                                                onChange: (e) => {
-                                                    setValue('paymentMethod.card.expirationDate', formatExpirationDate(e.target.value))
-                                                }
-                                            })}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                            maxLength={19}
-                                        />
-                                        {errors.paymentMethod?.card?.expirationDate && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.expirationDate.message}</p>)}
-                                    </div>
+                                    <Input
+                                        label="Expiration Date"
+                                        error={errors.paymentMethod?.card?.expirationDate}
+                                        {...register('paymentMethod.card.expirationDate', {
+                                            onChange: (e) => {
+                                                setValue('paymentMethod.card.expirationDate', formatExpirationDate(e.target.value))
+                                            }
+                                        })}
+                                        name="paymentMethod.card.expirationDate"
+                                    />
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Installments</label>
-                                        <input
-                                            type="text"
-                                            {...register('paymentMethod.card.installments', {valueAsNumber: true})}
-                                            className="mt-1 block w-full rounded-md border border-gray-200 px-2 py-1 outline-0 focus:border-base-green"
-                                            maxLength={19}
+
+                                        <Controller
+                                            name="paymentMethod.card.installments"
+                                            control={control}
+                                            render={({ field: { name, onChange, value } }) => (
+                                                <Select name={name} value={String(value)} onValueChange={(value) => onChange(Number(value))}>
+                                                    <SelectTrigger>
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="1">1x</SelectItem>
+                                                        <SelectItem value="2">2x</SelectItem>
+                                                        <SelectItem value="3">3x</SelectItem>
+                                                        <SelectItem value="4">4x</SelectItem>
+                                                        <SelectItem value="5">5x</SelectItem>
+                                                        <SelectItem value="6">6x</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            )}
                                         />
                                         {errors.paymentMethod?.card?.installments && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.installments.message}</p>)}
+                                            <p className="mt-1 text-sm text-red-600">{errors.paymentMethod.card.installments.message}</p>
+                                        )}
                                     </div>
 
                                     <div className="flex items-center">
