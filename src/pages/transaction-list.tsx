@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { MoreHorizontal } from 'lucide-react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
 
@@ -13,6 +14,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Loader } from '@/components/ui/loader.tsx'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
 import { TransactionStatus } from '@/enums/transaction-status.ts'
 import { ITransaction } from '@/types/transaction.ts'
 
@@ -31,12 +33,19 @@ export function TransactionList() {
         queryKey: ['transactions'],
         queryFn: () => getTransactions()
     })
-    
-    const data: Payment[] = apiData?.transactions?.map(((transaction: ITransaction) => ({
-        id: transaction.id,
-        status: transaction.status,
-        paymentMethod: transaction.paymentMethod.type
-    })))
+
+    const [statusFilter, setStatusFilter] = useState<'all' | TransactionStatus>('all')
+    const filteredData: Payment[] = (apiData?.transactions || [])
+        .filter((transaction: ITransaction) => {
+            if (statusFilter === 'all') return true
+            return transaction.status === statusFilter
+        })
+        .sort((a: Payment, b: Payment) => a.id.localeCompare(b.id)) // You can change this sort logic to sort by date or any other field
+        .map((transaction: ITransaction) => ({
+            id: transaction.id,
+            status: transaction.status,
+            paymentMethod: transaction.paymentMethod.type
+        }))
 
     if (isLoading) return <Loader />
 
@@ -45,8 +54,21 @@ export function TransactionList() {
             <div className="w-full">
                 <div className="rounded-lg bg-white p-6 shadow">
                     <h2 className="mb-4 text-xl font-semibold text-gray-800">Transactions List</h2>
-                    {data.length ? (
+                    {filteredData.length ? (
                         <div className="overflow-x-auto">
+                            <div className="mb-4 flex items-center justify-end gap-2">
+                                <label className="text-sm font-medium text-gray-700">Filter by status:</label>
+                                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as 'all' | TransactionStatus)}>
+                                    <SelectTrigger className="max-w-[180px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">all</SelectItem>
+                                        <SelectItem value={TransactionStatus.AUTHORIZED}>Authorized</SelectItem>
+                                        <SelectItem value={TransactionStatus.REPROVED}>Reproved</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                             <table className="w-full">
                                 <thead className="bg-gray-50">
                                     <tr>
@@ -63,7 +85,7 @@ export function TransactionList() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
-                                    {data.map((item: Payment) => (
+                                    {filteredData.map((item: Payment) => (
                                         <tr key={item.id}>
                                             <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
                                                 {item.id}
