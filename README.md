@@ -23,7 +23,7 @@ A aplicação estará disponível em: `http://localhost:5173`
 #### 📌 Observações
 
 - Após finalizar a transação no checkout, acessar a página `/transactions` para ter acesso à area de operações do e-commerce.
-- O número do cartão deve ser válido (conforme algoritmo de Luhn) para o formulário poder ser enviado.
+- O número do cartão deve ser válido (conforme algoritmo de Luhn) para o formulário poder ser enviado (ex: 5162204687040007).
 
 ---
 
