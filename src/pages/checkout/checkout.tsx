@@ -12,6 +12,8 @@ import { queryClient } from '@/lib/query-client.ts'
 import { OrderSummary } from '@/pages/checkout/order-summary.tsx'
 import { CheckoutFormData, checkoutFormSchema } from '@/pages/checkout/schemas/checkout-form-schema.ts'
 import { formatCardNumber } from '@/utils/format-card-number.ts'
+import { formatCNPJ } from '@/utils/format-cnpj.ts'
+import { formatCPF } from '@/utils/format-cpf.ts'
 import { formatExpirationDate } from '@/utils/format-expiration-date.ts'
 
 export function Checkout() {
@@ -27,7 +29,7 @@ export function Checkout() {
         }
     })
 
-    const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, control, watch, formState: { errors } } = useForm({
         resolver: zodResolver(checkoutFormSchema),
         defaultValues: {
             customer: { document: {type: 'cpf'} },
@@ -38,6 +40,8 @@ export function Checkout() {
     function onSubmitForm(data: CheckoutFormData) {
         mutate(data)
     }
+
+    const documentType = watch('customer.document.type')
 
     return (
         <div className="bg-gray-50">
@@ -101,7 +105,15 @@ export function Checkout() {
                                     <Input
                                         label="Document number"
                                         error={errors.customer?.document?.number}
-                                        {...register('customer.document.number')}
+                                        {...register('customer.document.number', {
+                                            onChange: (e) => {
+                                                const rawValue = e.target.value
+                                                const formatted =
+                                                    documentType === 'cnpj' ? formatCNPJ(rawValue) : formatCPF(rawValue)
+
+                                                setValue('customer.document.number', formatted)
+                                            }
+                                        })}
                                         name="customer.document.number"
                                     />
                                 </div>
