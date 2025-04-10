@@ -3,7 +3,6 @@ import { useMutation } from '@tanstack/react-query'
 import { CreditCard, User } from 'lucide-react'
 import { ReactElement } from 'react'
 import { Controller,useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 import { postTransaction } from '@/api/post-transaction.ts'
@@ -16,8 +15,6 @@ import { formatCardNumber } from '@/utils/format-card-number.ts'
 import { formatExpirationDate } from '@/utils/format-expiration-date.ts'
 
 export function Checkout() {
-    const navigate = useNavigate()
-
     const { mutate, isPending } = useMutation({
         mutationFn: (data: CheckoutFormData) => postTransaction(data),
         onSuccess: (result) => {
@@ -25,7 +22,7 @@ export function Checkout() {
                 toast.error(result.error)
             } else {
                 queryClient.invalidateQueries({ queryKey: ['transactions'] })
-                navigate(`/transactions/${result.transaction.id}`)
+                toast.success(result.message)
             }
         }
     })
@@ -44,7 +41,7 @@ export function Checkout() {
 
     return (
         <div className="bg-gray-50">
-            <div className="mx-auto max-w-7xl px-4 py-6">
+            <div className="mx-auto max-w-7xl">
                 <h1 className="mb-8 text-xl font-semibold text-gray-800">Checkout</h1>
 
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">

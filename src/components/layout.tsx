@@ -1,4 +1,4 @@
-import { List, ShoppingCart } from 'lucide-react'
+import { ShoppingCart } from 'lucide-react'
 import { Link, Outlet } from 'react-router-dom'
 
 export function Layout() {
@@ -7,14 +7,9 @@ export function Layout() {
             <header className="bg-white shadow-sm">
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                     <Link to="/" className="flex items-center">
-                        <ShoppingCart className="text-base-green size-8" />
+                        <ShoppingCart className="size-8 text-base-green" />
                         <span className="ml-2 text-xl font-semibold text-gray-900">E-commerce</span>
                     </Link>
-
-                    <div className='flex items-center gap-2'>
-                        <List className="text-base-green size-4" />
-                        <Link to="/transactions" className='font-semibold hover:text-base-green transition-colors'>Transactions</Link>
-                    </div>
                 </div>
             </header>
             

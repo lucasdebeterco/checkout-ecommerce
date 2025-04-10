@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { MoreHorizontal } from 'lucide-react'
 import { useNavigate } from 'react-router'
+import { toast } from 'react-toastify'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -40,7 +41,7 @@ export function TransactionList() {
     if (isLoading) return <Loader />
 
     return (
-        <div className="flex flex-col">
+        <div className="mx-auto flex max-w-4xl flex-col">
             <div className="w-full">
                 <div className="rounded-lg bg-white p-6 shadow">
                     <h2 className="mb-4 text-xl font-semibold text-gray-800">Transactions List</h2>
@@ -86,8 +87,10 @@ export function TransactionList() {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem
-                                                        onClick={() => navigator.clipboard.writeText(item.id)}>
+                                                    <DropdownMenuItem onClick={() => {
+                                                        navigator.clipboard.writeText(item.id)
+                                                        toast.info('Transction ID copied')
+                                                    }}>
                                                         Copy payment ID
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator/>

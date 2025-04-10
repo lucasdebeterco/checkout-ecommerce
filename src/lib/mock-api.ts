@@ -60,6 +60,7 @@ export function makeServer() {
 
                 return {
                     transaction: transactionData,
+                    message: 'Order transaction saved',
                 }
             })
 
