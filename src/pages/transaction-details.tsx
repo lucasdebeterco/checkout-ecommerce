@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { getTransactionById } from '@/api/get-transaction-by-id.ts'
 import { Loader } from '@/components/ui/loader.tsx'
 import { TransactionStatus } from '@/enums/transaction-status.ts'
+import { ITransactionItem } from '@/types/transaction.ts'
 import { formatCurrency } from '@/utils/format-currency.ts'
 
 export function TransactionDetails() {
@@ -154,7 +155,7 @@ export function TransactionDetails() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
-                                    {transaction.items.map((item: any, index: number) => (
+                                    {transaction.items.map((item: ITransactionItem, index: number) => (
                                         <tr key={index}>
                                             <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
                                                 {item.name}

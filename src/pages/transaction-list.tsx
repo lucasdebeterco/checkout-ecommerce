@@ -14,13 +14,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Loader } from '@/components/ui/loader.tsx'
 import { TransactionStatus } from '@/enums/transaction-status.ts'
+import { ITransaction } from '@/types/transaction.ts'
 
 import { getTransactions } from '../api/get-transactions.ts'
 
 export type Payment = {
     id: string
-    amount: number
-    status: 'pending' | 'processing' | 'success' | 'failed'
+    status: TransactionStatus
+    paymentMethod: string
 }
 
 export function TransactionList() {
@@ -30,9 +31,8 @@ export function TransactionList() {
         queryKey: ['transactions'],
         queryFn: () => getTransactions()
     })
-
-    // TODO - Tipar transaction
-    const data: Payment[] = apiData?.transactions?.map(((transaction: any) => ({
+    
+    const data: Payment[] = apiData?.transactions?.map(((transaction: ITransaction) => ({
         id: transaction.id,
         status: transaction.status,
         paymentMethod: transaction.paymentMethod.type
@@ -63,46 +63,47 @@ export function TransactionList() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
-                                    {/* TODO - Passar no projeto removendo todos os ANY */}
-                                    {data.map((item: any) => (<tr key={item.id}>
-                                        <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                                            {item.id}
-                                        </td>
-                                        <td className="whitespace-nowrap px-6 py-4 text-sm capitalize text-gray-600">
-                                            {item.paymentMethod}
-                                        </td>
-                                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
-                                            <span
-                                                className={`rounded-full px-3 py-1 text-sm font-semibold ${item.status === TransactionStatus.AUTHORIZED ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                                {item.status}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" className="size-8 p-0">
-                                                        <span className="sr-only">Open menu</span>
-                                                        <MoreHorizontal className="text-gray-700"/>
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem onClick={() => {
-                                                        navigator.clipboard.writeText(item.id)
-                                                        toast.info('Transction ID copied')
-                                                    }}>
-                                                        Copy payment ID
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator/>
-                                                    <DropdownMenuItem onClick={() => {
-                                                        navigate(`/transactions/${item.id}`)
-                                                    }}>
-                                                        View payment details
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </td>
-                                    </tr>))}
+                                    {data.map((item: Payment) => (
+                                        <tr key={item.id}>
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                                                {item.id}
+                                            </td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm capitalize text-gray-600">
+                                                {item.paymentMethod}
+                                            </td>
+                                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
+                                                <span
+                                                    className={`rounded-full px-3 py-1 text-sm font-semibold ${item.status === TransactionStatus.AUTHORIZED ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                                    {item.status}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" className="size-8 p-0">
+                                                            <span className="sr-only">Open menu</span>
+                                                            <MoreHorizontal className="text-gray-700"/>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                        <DropdownMenuItem onClick={() => {
+                                                            navigator.clipboard.writeText(item.id)
+                                                            toast.info('Transction ID copied')
+                                                        }}>
+                                                            Copy payment ID
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator/>
+                                                        <DropdownMenuItem onClick={() => {
+                                                            navigate(`/transactions/${item.id}`)
+                                                        }}>
+                                                            View payment details
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
