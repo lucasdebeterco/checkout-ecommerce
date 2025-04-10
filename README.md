@@ -46,7 +46,7 @@ Executar os testes unitários:
 npm run test
 ```
 
-#### Testes E2E (fim a fim)
+#### Testes E2E
 
 Para os testes E2E, foi utilizado o **Cypress**, simulando o fluxo de finalização de compra na tela de checkout, incluindo validação de erros de formulário.
 
