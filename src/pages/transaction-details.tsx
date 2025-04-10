@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { ClipboardList, CreditCard, MapPin, User } from 'lucide-react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import { getTransactionById } from '@/api/get-transaction-by-id.ts'
 import { Loader } from '@/components/ui/loader.tsx'
@@ -175,12 +175,12 @@ export function TransactionDetails() {
                 </div>
             ) : (
                 <div className="rounded-lg bg-white p-6 shadow">
-                    <div className="flex flex-col text-center ">
+                    <div className="flex flex-col gap-3 text-center ">
                         <span className="font-semibold text-base-green">
-                            Transaction not avaliable
+                            Transaction not found
                         </span>
                         <span className="text-sm text-gray-800">
-                            Please, return to checkout page and create a new transaction
+                            Please, <Link to="/" className="text-base-green hover:underline">return to checkout</Link> page and create a new transaction
                         </span>
                     </div>
                 </div>

@@ -25,11 +25,20 @@ export function Checkout() {
             } else {
                 queryClient.invalidateQueries({ queryKey: ['transactions'] })
                 toast.success(result.message)
+                reset()
             }
         }
     })
 
-    const { register, handleSubmit, setValue, control, watch, formState: { errors } } = useForm({
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        control,
+        watch,
+        reset,
+        formState: { errors}
+    } = useForm({
         resolver: zodResolver(checkoutFormSchema),
         defaultValues: {
             customer: { document: {type: 'cpf'} },
@@ -175,6 +184,7 @@ export function Checkout() {
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <Input
                                         label="Card Number"
+                                        placeholder="Luhn algorithm"
                                         error={errors.paymentMethod?.card?.number}
                                         {...register('paymentMethod.card.number', {
                                             onChange: (e) => {
@@ -204,6 +214,7 @@ export function Checkout() {
                                     <Input
                                         label="Expiration Date"
                                         error={errors.paymentMethod?.card?.expirationDate}
+                                        placeholder="mm/yyyy"
                                         {...register('paymentMethod.card.expirationDate', {
                                             onChange: (e) => {
                                                 setValue('paymentMethod.card.expirationDate', formatExpirationDate(e.target.value))
@@ -231,7 +242,7 @@ export function Checkout() {
                                                         <SelectItem value="5">5x</SelectItem>
                                                         <SelectItem value="6">6x</SelectItem>
                                                     </SelectContent>
-                                                </Select>
+                                                </Select> as ReactElement
                                             )}
                                         />
                                         {errors.paymentMethod?.card?.installments && (

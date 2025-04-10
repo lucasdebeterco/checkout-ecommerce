@@ -9,7 +9,9 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "module": "ESNext"
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "types": ["node"]
   },
   "include": ["cypress.config.ts", "cypress/*/.ts"]
 }

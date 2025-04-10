@@ -54,21 +54,22 @@ export function TransactionList() {
             <div className="w-full">
                 <div className="rounded-lg bg-white p-6 shadow">
                     <h2 className="mb-4 text-xl font-semibold text-gray-800">Transactions List</h2>
+                    <div className="mb-4 flex items-center justify-end gap-2">
+                        <label className="text-sm font-medium text-gray-700">Filter by status:</label>
+                        <Select value={statusFilter}
+                            onValueChange={(value) => setStatusFilter(value as 'all' | TransactionStatus)}>
+                            <SelectTrigger className="max-w-[180px]">
+                                <SelectValue/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">all</SelectItem>
+                                <SelectItem value={TransactionStatus.AUTHORIZED}>Authorized</SelectItem>
+                                <SelectItem value={TransactionStatus.REPROVED}>Reproved</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                     {filteredData.length ? (
                         <div className="overflow-x-auto">
-                            <div className="mb-4 flex items-center justify-end gap-2">
-                                <label className="text-sm font-medium text-gray-700">Filter by status:</label>
-                                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as 'all' | TransactionStatus)}>
-                                    <SelectTrigger className="max-w-[180px]">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">all</SelectItem>
-                                        <SelectItem value={TransactionStatus.AUTHORIZED}>Authorized</SelectItem>
-                                        <SelectItem value={TransactionStatus.REPROVED}>Reproved</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
                             <table className="w-full">
                                 <thead className="bg-gray-50">
                                     <tr>
@@ -132,7 +133,7 @@ export function TransactionList() {
                     ) : (
                         <div className="flex flex-col text-center ">
                             <span className="font-semibold text-base-green">
-                                Any transaction avaliable
+                                No transactions avaliable
                             </span>
                             <span className="text-sm text-gray-800">
                                 Please, return to checkout page and create a new transaction
@@ -141,6 +142,5 @@ export function TransactionList() {
                     )}
                 </div>
             </div>
-        </div>
-    )
+        </div>)
 }
