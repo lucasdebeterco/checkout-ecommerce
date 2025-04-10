@@ -19,7 +19,7 @@ export function Input({ label, name, error, ...props }: InputProps) {
                 {...props}
             />
             {error && (
-                <p className="mt-1 text-sm text-red-600">{error.message}</p>
+                <p className="mt-1 text-sm text-red-600" data-error={name} >{error.message}</p>
             )}
         </div>
     )

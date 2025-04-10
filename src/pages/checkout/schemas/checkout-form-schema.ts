@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { isValidCardNumber } from '@/utils/validate-card-number.ts'
+
 export const checkoutFormSchema = z.object({
     amount: z.number().min(0.01, 'Invalid Amount'),
     customer: z.object({
@@ -26,7 +28,13 @@ export const checkoutFormSchema = z.object({
     paymentMethod: z.object({
         type: z.string().default('card'),
         card: z.object({
-            number: z.string().min(19, 'Invalid card number'),
+            number: z
+                .string()
+                .min(13, 'Card number too short')
+                .max(19, 'Card number too long')
+                .refine(isValidCardNumber, {
+                    message: 'Invalid card number',
+                }),
             holderName: z.string().min(1, 'Cardholder name is required'),
             cvv: z.string().min(3, 'Invalid CVV'),
             expirationDate: z.string().min(7, 'Invalid date, expected MM/YYYY'),
